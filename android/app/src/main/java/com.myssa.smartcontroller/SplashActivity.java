@@ -27,7 +27,7 @@ public class SplashActivity extends AppCompatActivity {
         binding.imageContainer.setVisibility(View.VISIBLE);
 
         try {
-            InputStream ims = getAssets().open("logo.png");
+            InputStream ims = getAssets().open("logo_1_small.png");
             // load image as Drawable
             Drawable d = Drawable.createFromStream(ims, null);
             // set image to ImageView

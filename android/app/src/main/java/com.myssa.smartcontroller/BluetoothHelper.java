@@ -124,7 +124,7 @@ public class BluetoothHelper {
     }
 
     public void send(String message) {
-        Log.d(TAG, "send: connectedThread: " + connectedThread);
+        Log.d(TAG, "send: connectedThread: " + message);
         if (connectedThread == null) {
             Log.e(TAG, "send: error: connectedThread: null");
             if (listener != null) {

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +23,7 @@ import androidx.core.app.ActivityCompat;
 import com.myssa.smartcontroller.databinding.ActivityMainBinding;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,29 +44,33 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-//        try {
-//            InputStream ims = getAssets().open("company_logo_1.png");
-//            // load image as Drawable
-//            Drawable d = Drawable.createFromStream(ims, null);
-//            // set image to ImageView
-//            binding.logoImage.setImageDrawable(d);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            InputStream ims = getAssets().open("logo_1_small.png");
+            // load image as Drawable
+            Drawable d = Drawable.createFromStream(ims, null);
+            // set image to ImageView
+            binding.logics.logoImg.setImageDrawable(d);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         binding.notSupportedText.setVisibility(View.GONE);
+        binding.settingsBtn.setVisibility(View.GONE);
         binding.connectButton.setVisibility(View.GONE);
         binding.logicsContainer.setVisibility(View.GONE);
-        // binding.logicButtonsContainer.setVisibility(View.GONE);
         binding.reConnectButton.setVisibility(View.GONE);
         binding.disconnectButton.setVisibility(View.GONE);
         binding.progressBar.setVisibility(View.GONE);
         binding.infoContainer.setVisibility(View.GONE);
 
-        binding.infoBtn.setOnClickListener(v ->
-                binding.infoContainer.setVisibility(
-                        binding.infoContainer.getVisibility() == View.VISIBLE ?
-                                View.GONE : View.VISIBLE));
+        binding.infoBtn.setOnClickListener(v -> {
+            binding.infoContainer.setVisibility(
+                    binding.infoContainer.getVisibility() == View.VISIBLE ?
+                            View.GONE : View.VISIBLE);
+            binding.settingsBtn.setVisibility(
+                    binding.settingsBtn.getVisibility() == View.VISIBLE ?
+                            View.GONE : View.VISIBLE);
+        });
 
         binding.settingsBtn.setOnClickListener(v -> {
             // open bluetooth settings
@@ -113,12 +119,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
         surfaceHolder = holder;
-        startPlayer();
-        new Handler().postDelayed(() -> {
-            if (mp != null) {
-                mp.pause();
-            }
-        }, 500);
+        initPlayer();
     }
 
     @Override
@@ -131,49 +132,61 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     }
 
+    private void initPlayer() {
+        startPlayer();
+        new Handler().postDelayed(() -> {
+            if (mp != null) {
+                mp.pause();
+            }
+        }, 500);
+    }
+
     private void startPlayer() {
         if (surfaceHolder == null) {
             return;
         }
 
-        closePlayer();
+        stopPlayer();
 
-        mp = new MediaPlayer();
-        mp.setOnPreparedListener(mp -> {
-            Log.d(MainActivity.class.getSimpleName(), "setOnPreparedListener:");
-            // mp.setVolume(0f, 0f);
-            mp.setLooping(false);
-            setVideoSize();
-        });
-        mp.setOnInfoListener((mp, what, extra) -> {
-            Log.d(MainActivity.class.getSimpleName(), "setOnInfoListener:");
-            // binding.logics.startBtn.setVisibility(View.GONE);
-            if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
-                Log.d(MainActivity.class.getSimpleName(), "playing: ");
+        if (mp == null) {
+            mp = new MediaPlayer();
+            mp.setOnPreparedListener(mp -> {
+                Log.d(MainActivity.class.getSimpleName(), "setOnPreparedListener:");
+                // mp.setVolume(0f, 0f);
+                mp.setLooping(false);
                 setVideoSize();
-                // return true;
-            }
-            return false;
-        });
-        mp.setOnErrorListener((mp, what, extra) -> {
-            Log.d(MainActivity.class.getSimpleName(), "setOnErrorListener:");
-            launch();
-            return false;
-        });
-        mp.setOnCompletionListener(mp -> {
-            Log.d(MainActivity.class.getSimpleName(), "setOnCompletionListener:");
-            launch();
-        });
+            });
+            mp.setOnInfoListener((mp, what, extra) -> {
+                Log.d(MainActivity.class.getSimpleName(), "setOnInfoListener:");
+                // binding.logics.startBtn.setVisibility(View.GONE);
+                if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+                    Log.d(MainActivity.class.getSimpleName(), "playing: ");
+                    setVideoSize();
+                    // return true;
+                }
+                return false;
+            });
+            mp.setOnErrorListener((mp, what, extra) -> {
+                Log.d(MainActivity.class.getSimpleName(), "setOnErrorListener:");
+                launch();
+                return false;
+            });
+            mp.setOnCompletionListener(mp -> {
+                Log.d(MainActivity.class.getSimpleName(), "setOnCompletionListener:");
+                launch();
+                initPlayer();
+            });
 
-        String path = "android.resource://" + getPackageName() + "/" + R.raw.scanner;
-        Log.d(SplashActivity.class.getSimpleName(), "path: " + path);
-        mp.setDisplay(surfaceHolder);
-        try {
-            mp.setDataSource(this, Uri.parse(path));
-            mp.prepare();
-        } catch (IllegalArgumentException | IllegalStateException | IOException e) {
-            e.printStackTrace();
-            launch();
+            String path = "android.resource://" + getPackageName() + "/" + R.raw.scanner;
+            Log.d(SplashActivity.class.getSimpleName(), "path: " + path);
+            mp.setDisplay(surfaceHolder);
+            try {
+                mp.setDataSource(this, Uri.parse(path));
+                mp.prepare();
+            } catch (IllegalArgumentException | IllegalStateException | IOException e) {
+                e.printStackTrace();
+                launch();
+            }
         }
         mp.start();
     }
@@ -212,19 +225,34 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private void closePlayer() {
         try {
             if (mp != null) {
+                stopPlayer();
                 mp.setOnPreparedListener(null);
                 mp.setOnInfoListener(null);
                 mp.setOnErrorListener(null);
                 mp.setOnCompletionListener(null);
-                //if (mp.isPlaying()) {
-                //    mp.pause();
-                //}
+
                 mp.release();
-                mp.reset();
-                mp = null;
+                // mp.setDisplay(null);
+//                try {
+//                    mp.reset();
+//                } catch (IllegalStateException e) {
+//                    Log.e(TAG, "player: closePlayer: catch 1: ", e);
+//                    e.printStackTrace();
+//                }
+//                mp = null;
             }
         } catch (IllegalStateException e) {
+            Log.e(TAG, "player: closePlayer: catch: ", e);
             e.printStackTrace();
+        }
+    }
+
+    private void stopPlayer() {
+        if (mp != null) {
+            if (mp.isPlaying()) {
+                mp.seekTo(500);
+                mp.pause();
+            }
         }
     }
 
@@ -268,16 +296,29 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             }
         });
 
+        binding.logics.startBtn.setOnClickListener(v -> {
+            binding.logics.imageContainer.setVisibility(View.GONE);
+        });
+
         binding.logics.surfaceView.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
+                    Log.d(TAG, "player: onTouch: MotionEvent.ACTION_DOWN");
                     startPlayer();
                     break;
+                case MotionEvent.ACTION_MOVE:
+                    // Handle touch move
+                    break;
                 case MotionEvent.ACTION_UP:
-                    closePlayer();
+                    Log.d(TAG, "player: onTouch: MotionEvent.ACTION_UP, position: " + mp.getCurrentPosition());
+                    stopPlayer();
+                    binding.logics.imageContainer.setVisibility(View.VISIBLE);
+                    if (mp != null && mp.getCurrentPosition() >= 5500) {
+                        launch();
+                    }
                     break;
             }
-            return false;
+            return true;
         });
     }
 
@@ -499,8 +540,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 //    }
 
     private void launch() {
-        // binding.logics.startBtn.setVisibility(View.VISIBLE);
+        binding.logics.imageContainer.setVisibility(View.VISIBLE);
         if (helper != null) {
+            Log.d(TAG, "player: launch");
             helper.send("start");
         }
     }

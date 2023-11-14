@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/primary_color"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="@color/primary_color">
 
         <LinearLayout
             android:id="@+id/logicsContainer"
@@ -117,9 +117,9 @@
                 android:layout_marginStart="16dp"
                 android:contentDescription="Settings"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:tint="@color/primary_color"
+                android:tint="@color/white"
                 app:srcCompat="@drawable/ic_info"
-                app:tint="@color/primary_color"
+                app:tint="@color/white"
                 tools:ignore="HardcodedText" />
 
             <!--            <TextView-->
@@ -143,9 +143,9 @@
                 android:layout_marginEnd="16dp"
                 android:contentDescription="Settings"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:tint="@color/primary_color"
+                android:tint="@color/white"
                 app:srcCompat="@drawable/ic_settings_bluetooth"
-                app:tint="@color/primary_color"
+                app:tint="@color/white"
                 tools:ignore="HardcodedText" />
 
         </RelativeLayout>
