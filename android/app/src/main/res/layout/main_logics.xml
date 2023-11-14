@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@color/white"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <SurfaceView
+        android:id="@+id/surfaceView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/startBtn"-->
+    <!--        android:layout_width="150dp"-->
+    <!--        android:layout_height="100dp"-->
+    <!--        android:layout_centerInParent="true"-->
+    <!--        android:background="@drawable/blue_bg"-->
+    <!--        android:clickable="false"-->
+    <!--        android:elevation="8dp"-->
+    <!--        android:focusable="false"-->
+    <!--        android:gravity="center"-->
+    <!--        android:padding="8dp"-->
+    <!--        android:text="LAUNCH"-->
+    <!--        android:textAlignment="center"-->
+    <!--        android:textAllCaps="true"-->
+    <!--        android:textColor="@color/white"-->
+    <!--        android:textSize="14sp"-->
+    <!--        android:visibility="gone"-->
+    <!--        tools:ignore="HardcodedText" />-->
+
+<!--    <androidx.appcompat.widget.AppCompatImageView-->
+<!--        android:id="@+id/splash_image"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:clickable="false"-->
+<!--        android:focusable="false"-->
+<!--        android:scaleType="fitXY"-->
+<!--        android:src="@drawable/ic_launcher_foreground" />-->
+
+</RelativeLayout>
