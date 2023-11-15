@@ -45,11 +45,31 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         setContentView(binding.getRoot());
 
         try {
-            InputStream ims = getAssets().open("logo_1_small.png");
+            InputStream ims = getAssets().open("home_logo.png");
             // load image as Drawable
             Drawable d = Drawable.createFromStream(ims, null);
             // set image to ImageView
             binding.logics.logoImg.setImageDrawable(d);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            InputStream ims = getAssets().open("launch_bg.png");
+            // load image as Drawable
+            Drawable d = Drawable.createFromStream(ims, null);
+            // set image to ImageView
+            binding.logics.relaunchBgImg.setImageDrawable(d);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            InputStream ims = getAssets().open("launch_logo.png");
+            // load image as Drawable
+            Drawable d = Drawable.createFromStream(ims, null);
+            // set image to ImageView
+            binding.logics.relaunchImg.setImageDrawable(d);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -299,6 +319,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         binding.logics.startBtn.setOnClickListener(v -> {
             binding.logics.imageContainer.setVisibility(View.GONE);
         });
+        binding.logics.relaunchBtn.setOnClickListener(v -> {
+            binding.logics.relaunchContainer.setVisibility(View.GONE);
+            binding.logics.imageContainer.setVisibility(View.VISIBLE);
+        });
 
         binding.logics.surfaceView.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getAction()) {
@@ -311,11 +335,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     break;
                 case MotionEvent.ACTION_UP:
                     Log.d(TAG, "player: onTouch: MotionEvent.ACTION_UP, position: " + mp.getCurrentPosition());
-                    stopPlayer();
                     binding.logics.imageContainer.setVisibility(View.VISIBLE);
                     if (mp != null && mp.getCurrentPosition() >= 5500) {
                         launch();
                     }
+                    stopPlayer();
                     break;
             }
             return true;
@@ -400,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             @Override
             public void onMessageReceived(String message) {
                 Log.d(TAG, "onMessageReceived: " + message);
-                // runOnUiThread(() -> handleMessage(message));
+                 runOnUiThread(() -> handleMessage(message));
             }
         });
 
@@ -439,7 +463,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 //        device.syncDevice();
 //    }
 
-//    private void handleMessage(String message) {
+    private void handleMessage(String message) {
+        if (message != null && message.contains("finish")) {
+            binding.logics.imageContainer.setVisibility(View.GONE);
+            binding.logics.relaunchContainer.setVisibility(View.VISIBLE);
+            stopPlayer();
+        }
 //        // current date
 //        int cyear = -1;
 //        int cmon = -1;
@@ -537,13 +566,14 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 //        if (msg != null) {
 //            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 //        }
-//    }
+    }
 
     private void launch() {
-        binding.logics.imageContainer.setVisibility(View.VISIBLE);
+        binding.logics.imageContainer.setVisibility(View.GONE);
+        binding.logics.relaunchContainer.setVisibility(View.VISIBLE);
         if (helper != null) {
             Log.d(TAG, "player: launch");
-            helper.send("start");
+            helper.send("start\r\n");
         }
     }
 
